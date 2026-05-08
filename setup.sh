@@ -34,20 +34,23 @@ const CONFIG = {
 };
 EOL
 
-# Create installer script
+# Create installer script (Fixed missing space in if statement)
 cat <<'EOL' > install.sh
 #!/bin/bash
 pkg update && pkg upgrade -y
 pkg install git python -y
-if[ -d "RTel-github" ]; then 
+
+if [ -d "RTel-github" ]; then 
     cd RTel-github && git pull
 else 
     git clone https://github.com/arshiacomplus/RTel-github.git && cd RTel-github
 fi
+
 read -p "Enter your GitHub username: " GITHUB_USER
 sed -i "s|arshiacomplus|$GITHUB_USER|g" frontend/config.js
-echo "Installation complete."
-echo "Run: python3 -m http.server 8080 -d frontend"
+
+echo "✅ Installation complete."
+echo "🚀 Run: python3 -m http.server 8080 -d frontend"
 EOL
 
 chmod +x install.sh
@@ -64,4 +67,5 @@ EOL
 # Commit and push
 git add .
 git commit -m "Initialize project structure"
+git branch -M main
 git push -u origin main
