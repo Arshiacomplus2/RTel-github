@@ -8,6 +8,8 @@ on:
 jobs:
   fetch-and-sync:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
@@ -26,9 +28,9 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          
+
           git checkout data-branch 2>/dev/null || git checkout -b data-branch
-          
+
           git checkout main -- src/ requirements.txt .github/
 
       - name: 🚀 Run Fetcher Engine
@@ -40,6 +42,6 @@ jobs:
       - name: 💾 Commit & Push Data
         run: |
           git add data/
-          
+
           git commit -m "📝 Update Telegram data: $(date -u)" || echo "No changes to commit"
           git push origin data-branch
