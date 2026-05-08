@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTel - Telegram Mirror</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans antialiased flex flex-col items-center min-h-screen">
+    <header class="w-full max-w-2xl bg-blue-500 text-white shadow-md sticky top-0 z-50 p-4 flex justify-between items-center rounded-b-xl">
+        <h1 class="text-xl font-bold flex items-center gap-2">
+            <span>🚀</span> RTel Feed
+        </h1>
+        <button id="refresh-btn" class="bg-blue-600 hover:bg-blue-700 p-2 rounded-full transition cursor-pointer">
+            🔄
+        </button>
+    </header>
+    <main class="w-full max-w-2xl p-4 flex-1 flex flex-col gap-4" id="messages-container">
+    </main>
+    <div id="loader" class="hidden py-4 text-center text-gray-500">
+        <svg class="animate-spin h-8 w-8 mx-auto text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+    </div>
+    <script src="config.js"></script>
+    <script src="assets/app.js"></script>
+</body>
+</html>
