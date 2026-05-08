@@ -21,7 +21,8 @@ install_pkg git
 install_pkg python
 
 echo -e "\n${BLUE}Enter your GitHub Username:${NC}"
-read -p "Username: " GITHUB_USER
+
+read -p "Username: " GITHUB_USER < /dev/tty
 
 if [ -z "$GITHUB_USER" ]; then
     echo "Username cannot be empty!"
@@ -35,11 +36,11 @@ if [ -d "RTel-github" ]; then
     cd RTel-github
 else
     echo "Cloning repository..."
-
     if ! git clone $REPO_URL; then
         echo "Git clone failed. Trying wget fallback..."
         mkdir -p RTel-github
-        wget -qO- https://github.com/$GITHUB_USER/RTel-github/archive/refs/heads/main.tar.gz | tar -xz -C RTel-github --strip-components=1
+        
+        wget -qO- "https://github.com/$GITHUB_USER/RTel-github/archive/refs/heads/main.tar.gz" | tar -xz -C RTel-github --strip-components=1
         cd RTel-github
     else
         cd RTel-github
