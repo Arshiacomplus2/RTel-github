@@ -1,0 +1,47 @@
+       name: 🔄 Fetch Telegram Data
+       
+       on:
+         schedule:
+           - cron: '0 */4 * * *'
+         workflow_dispatch:
+       
+       jobs:
+         fetch-and-sync:
+           runs-on: ubuntu-latest
+           steps:
+             - name: 📥 Checkout repository
+               uses: actions/checkout@v4
+               with:
+                 fetch-depth: 0
+       
+             - name: ⚙️ Set up Python
+               uses: actions/setup-python@v4
+               with:
+                 python-version: '3.10'
+       
+             - name: 📦 Install dependencies
+               run: pip install -r requirements.txt
+       
+             - name: 🔀 Switch to data-branch
+               run: |
+                 git config --global user.name 'github-actions[bot]'
+                 git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+       
+                 git checkout data-branch 2>/dev/null || git checkout -b data-branch
+       
+                 git checkout main -- src/ requirements.txt .github/
+       
+             - name: 🚀 Run Fetcher Engine
+               env:
+                 TG_API_ID: ${{ secrets.TG_API_ID }}
+                 TG_API_HASH: ${{ secrets.TG_API_HASH }}
+                 TG_SESSION: ${{ secrets.TG_SESSION }}
+                 TARGET_CHANNELS: ${{ secrets.TARGET_CHANNELS }}
+               run: python src/fetcher.py
+       
+             - name: 💾 Commit & Push Data
+               run: |
+                 git add data/
+       
+                 git commit -m "📝 Update Telegram data: $(date -u)" || echo "No changes to commit"
+                 git push origin data-branch
