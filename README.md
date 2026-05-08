@@ -6,12 +6,9 @@
 
 RTel is a serverless, lightweight application designed to mirror Telegram channels without requiring a dedicated backend server or VPN access. It utilizes GitHub Actions for data fetching, stores message data as static JSON files in a Git repository, and serves the content directly to a local web browser.
 
-## Dual-Mode Fetching Engine
-
-RTel supports two operational modes depending on your needs:
-
-*   **Bot Mode (Recommended & Easy):** Uses a standard Telegram Bot Token. No API keys required. *Note: The bot must be added as an administrator to the target channel.*
-*   **Userbot Mode (Advanced):** Uses your personal Telegram account via a String Session. Can fetch messages from *any* public or private channel you have joined.
+## Requirements
+To use RTel, you only need a standard **Telegram Bot Token**. 
+*Note: The bot must be added as an administrator to the target channels you wish to mirror.*
 
 ## Setup Instructions
 
@@ -19,18 +16,10 @@ RTel supports two operational modes depending on your needs:
 
 1. **Fork** this repository to your GitHub account.
 2. Navigate to your repository's **Settings > Secrets and variables > Actions**.
-3. Add the following Repository Secrets based on your preferred mode:
-
-   **For Bot Mode (Easy):**
-   *   `TARGET_CHANNELS`: Comma-separated target channels (e.g., `@my_channel`).
-   *   `TG_BOT_TOKEN`: Your Telegram Bot Token from [@BotFather](https://t.me/BotFather).
-
-   **For Userbot Mode (Advanced):**
-   *   `TARGET_CHANNELS`: Comma-separated target channels.
-   *   `TG_SESSION`: Your generated Telegram String Session.
-   *   *(Optional)* `TG_API_ID` & `TG_API_HASH`: Custom API keys. If left empty, official Telegram Android keys will be used automatically.
-
-4. Go to the **Actions** tab, select **Fetch Telegram Data**, and click **Run workflow** to initialize the background engine.
+3. Add the following two Repository Secrets:
+   *   `TG_BOT_TOKEN`: Your Telegram Bot Token obtained from [@BotFather](https://t.me/BotFather).
+   *   `TARGET_CHANNELS`: A comma-separated list of target channels (e.g., `@my_channel,@news_channel`).
+4. Go to the **Actions** tab, select **Fetch Telegram Data**, and click **Run workflow** to initialize the background engine. It will automatically sync every 4 hours.
 
 ### 2. Client Installation
 
@@ -43,7 +32,7 @@ RTel supports two operational modes depending on your needs:
 curl -sL https://raw.githubusercontent.com/YOUR_USERNAME/RTel-github/main/install.sh | bash
 ```
 
-Once installed, you can launch the local application anytime by typing `rtel` in Termux and navigating to `http://localhost:8080`.
+Once installed, you can launch the local application anytime by simply typing `rtel` in Termux and navigating to `http://localhost:8080`.
 
 #### Desktop (Linux / macOS / Windows)
 

@@ -1,31 +1,21 @@
 import os
 import sys
 from telethon.sync import TelegramClient
-from telethon.sessions import StringSession
 from utils import load_json, save_json, manage_archives, DATA_DIR
 
 
-API_ID_ENV = os.environ.get('TG_API_ID', '').strip()
-API_HASH_ENV = os.environ.get('TG_API_HASH', '').strip()
-SESSION = os.environ.get('TG_SESSION', '').strip()
 BOT_TOKEN = os.environ.get('TG_BOT_TOKEN', '').strip()
 CHANNELS = os.environ.get('TARGET_CHANNELS', '').split(',')
 
-
-if not API_ID_ENV or not API_HASH_ENV:
-    API_ID = 6
-    API_HASH = "eb06d4abfb49dc3eeb1aeb98ae0f581e"
-else:
-    API_ID = int(API_ID_ENV)
-    API_HASH = API_HASH_ENV
-
-if not SESSION and not BOT_TOKEN:
-    print("❌ Error: You must provide either TG_SESSION (Userbot) or TG_BOT_TOKEN (Bot)!")
+if not BOT_TOKEN:
+    print("❌ Error: TG_BOT_TOKEN is missing! Please set it in GitHub Secrets.")
     sys.exit(1)
 
 
-session_storage = StringSession(SESSION) if SESSION else StringSession('')
-client = TelegramClient(session_storage, API_ID, API_HASH)
+API_ID = 6
+API_HASH = "eb06d4abfb49dc3eeb1aeb98ae0f581e"
+
+client = TelegramClient('bot_session', API_ID, API_HASH)
 
 def fetch_messages():
     state_file = os.path.join(DATA_DIR, 'sync_state.json')
@@ -34,13 +24,8 @@ def fetch_messages():
     state = load_json(state_file, {})
     messages = load_json(latest_file,[])
 
-
-    if BOT_TOKEN:
-        print("🤖 Starting in BOT mode...")
-        client.start(bot_token=BOT_TOKEN)
-    else:
-        print("👤 Starting in USERBOT mode...")
-        client.start()
+    print("🤖 Starting in BOT mode...")
+    client.start(bot_token=BOT_TOKEN)
 
     with client:
         for channel in CHANNELS:
@@ -62,7 +47,7 @@ def fetch_messages():
                             "text": msg.text
                         })
             except Exception as e:
-                print(f"⚠️ Could not fetch {channel}. Error: {str(e)}")
+                print(f"⚠️ Could not fetch {channel}. Ensure the bot is an admin in the channel. Error: {str(e)}")
                 continue
 
             if new_msgs:
