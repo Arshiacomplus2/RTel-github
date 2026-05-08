@@ -5,45 +5,58 @@ GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-echo -e "${BLUE}🚀 Welcome to RTel Magic Installer!${NC}"
-echo "Installing prerequisites (Git & Python)..."
-pkg update -y && pkg upgrade -y
-pkg install git python -y
+echo -e "${BLUE}🚀 RTel Lazy Installer${NC}"
 
-echo -e "\n${BLUE}Please enter your GitHub Username:${NC}"
+
+install_pkg() {
+    if ! command -v $1 &> /dev/null; then
+        echo "Installing $1..."
+        pkg install $1 -y
+    else
+        echo "$1 is already installed."
+    fi
+}
+
+install_pkg git
+install_pkg python
+
+echo -e "\n${BLUE}Enter your GitHub Username:${NC}"
 read -p "Username: " GITHUB_USER
 
 if [ -z "$GITHUB_USER" ]; then
-    echo "Username cannot be empty! Exiting..."
+    echo "Username cannot be empty!"
     exit 1
 fi
 
 REPO_URL="https://github.com/$GITHUB_USER/RTel-github.git"
 
-if[ -d "RTel-github" ]; then
-    echo "Project folder already exists. Updating..."
-    cd RTel-github && git pull origin main
-else
-    echo "Cloning your repository..."
-    git clone $REPO_URL
+if [ -d "RTel-github" ]; then
+    echo "Project folder exists. Skipping download..."
     cd RTel-github
+else
+    echo "Cloning repository..."
+
+    if ! git clone $REPO_URL; then
+        echo "Git clone failed. Trying wget fallback..."
+        mkdir -p RTel-github
+        wget -qO- https://github.com/$GITHUB_USER/RTel-github/archive/refs/heads/main.tar.gz | tar -xz -C RTel-github --strip-components=1
+        cd RTel-github
+    else
+        cd RTel-github
+    fi
 fi
 
-echo "Configuring the frontend..."
-
+echo "Configuring..."
 sed -i "s|arshiacomplus|$GITHUB_USER|g" frontend/config.js
 
-echo "Creating 'rtel' quick command..."
 
 ALIAS_CMD="alias rtel='cd ~/RTel-github && python -m http.server 8080 -d frontend'"
-
-
-if ! grep -q "alias rtel=" ~/.bashrc 2>/dev/null; then echo "$ALIAS_CMD" >> ~/.bashrc; fi
-if [ -f ~/.zshrc ] && ! grep -q "alias rtel=" ~/.zshrc 2>/dev/null; then echo "$ALIAS_CMD" >> ~/.zshrc; fi
+for rc in ~/.bashrc ~/.zshrc; do
+    if [ -f "$rc" ] && ! grep -q "alias rtel=" "$rc"; then
+        echo "$ALIAS_CMD" >> "$rc"
+    fi
+done
 
 echo -e "\n${GREEN}✅ Installation Complete!${NC}"
-echo -e "💡 Next time, just type ${GREEN}rtel${NC} in Termux to start reading messages."
-echo -e "🚀 Starting the web server for the first time..."
-
-
+echo -e "💡 Type ${GREEN}rtel${NC} to start."
 python -m http.server 8080 -d frontend
